@@ -28,36 +28,44 @@ Rule-Based Methods: These involve setting explicit rules that define normal beha
 For this assignment, we focus on Rule-Based Methods. We built on the code from the first assignment to log in using Google's single sign-on (SSO) feature, which refers to :<https://github.com/luckyeven/k8s-google-sso.git> . This process generates login logs, which we then send to Azure Log Analytics Workspace. The image below shows the logs created from our simulated login attempts. We'll specifically look at the "loginAttemptResult" to spot any unusual or suspicious login activity.
 
 By analyzing the login attempt results, we can identify patterns that might indicate unauthorized access attempts or other security issues that need attention. This analysis helps strengthen our system’s security by quickly addressing any potential login anomalies detected in the logs.
-1. ## <a name="_102cobcvwfte"></a>Send login logs to Azure Log Analytics Workspace in Azure![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.001.png)
+## <a name="_102cobcvwfte"></a>Send login logs to Azure Log Analytics Workspace in Azure
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.001.png)
+   
 # <a name="_9lu60kzegxk7"></a>Part 2: Preparing for Automation
-1. ## <a name="_f8x97nzemzha"></a>Creating an Azure Logic App
+## <a name="_f8x97nzemzha"></a>Creating an Azure Logic App
 Create a Logic App: Go to "Create a resource" > "Integration" > "Logic App"
-![](images/images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.002.png)
+![](images/images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.002.png) 
+
 open the "Logic App Designer".
 
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.003.png)
-1. ### <a name="_fs576tph0c24"></a>Setting Up Triggers to activate every two minutes
-In Logic App configuration, set the trigger to activate every two minutes. This ensures the app checks for new data or performs its designated tasks with this regular frequency, maintaining up-to-date operations.![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.004.png)
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.003.png) 
+### <a name="_fs576tph0c24"></a>Setting Up Triggers to activate every two minutes
+In Logic App configuration, set the trigger to activate every two minutes. This ensures the app checks for new data or performs its designated tasks with this regular frequency, maintaining up-to-date operations.![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.004.png) 
 
-1. ### <a name="_yzk742tyy94o"></a>Add an Action: logs connected to Log Analytics workspace if login fail more than twice as the same userId 
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.005.png)<a name="_iein4oq7aa4w"></a>
+### <a name="_yzk742tyy94o"></a>Add an Action: logs connected to Log Analytics workspace if login fail more than twice as the same userId 
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.005.png)<a name="_iein4oq7aa4w"></a> 
+
 Part 3: Implementing Anomaly Detection
 ==========================================================================================
 To construct a query targeting multiple failed login attempts for the same email address within the googleLogs\_CL table in the google-log-analytics-ws Log Analytics workspace, use Azure's Kusto Query Language (KQL). The KQL query would scan through the collected log data, specifically looking for patterns where a userId (email address) has experienced more than two failed login attempts.
 
 The query structure would involve selecting from the googleLogs\_CL table where the loginAttemptResult equals "Failed". Next, you would aggregate the count of these failed attempts by userId. A final step would be to use a where filter to only include results where the FailedCount is greater than 2.
 
-This query helps identify potential security risks, pinpointing accounts that might be under a brute force attack or users who are struggling with login, perhaps due to forgotten credentials. By automating the monitoring of such events, administrators can quickly take action, like initiating password resets or investigating possible attacks, thus maintaining the integrity and security of the system.![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.006.png)
+This query helps identify potential security risks, pinpointing accounts that might be under a brute force attack or users who are struggling with login, perhaps due to forgotten credentials. By automating the monitoring of such events, administrators can quickly take action, like initiating password resets or investigating possible attacks, thus maintaining the integrity and security of the system.![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.006.png) 
+
 1. ### <a name="_k3gu0aacns6o"></a>Add next action: trigger an email notification if more than two failed login attempts
 Next, by incorporating a new action in Logic App, to trigger an email notification to be assigned the email address whenever the query identifies more than two failed login attempts.
 
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.007.png)
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.007.png) 
 
-Upon executing the Logic App, an alert for unusual login attempts is successfully dispatched to the specified email addresses. This automation streamlines the monitoring process, ensuring prompt awareness and response to potential security incidents involving account access.
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.008.png)
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.009.png)
+Upon executing the Logic App, an alert for unusual login attempts is successfully dispatched to the specified email addresses. This automation streamlines the monitoring process, ensuring prompt awareness and response to potential security incidents involving account access. 
+
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.008.png) 
+
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.009.png) 
+
 # <a name="_k41ffl6vo6e0"></a>Part 4: Integrating Cloud Security Best Practices 
-## <a name="_inzfvbxjggtx"></a>4.  Alert Escalation: 
+## <a name="_inzfvbxjggtx"></a>  Alert Escalation: 
 ### <a name="_vcfju7q4jqqy"></a>      Trigger if more than five times within two-minute as the same userId
 Imagine a scenario where an account experiences multiple login failures in a short period. Such patterns are often indicative of unusual activity, potentially signaling unauthorized access attempts. To enhance security measures and ensure prompt response to these incidents, the alerting mechanism within a system can be upgraded.
 
@@ -78,19 +86,25 @@ Moreover, this upgraded alert system serves as a deterrent to malicious actors. 
 
 
 
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.010.png)
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.010.png) 
 
 
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.011.png)
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.011.png) 
 
-If more than five failed login attempts are detected within a two-minute window, the system automatically initiates an email notification process. This alert is sent to designated recipients, informing them of the potential security concern, thus enabling rapid response to mitigate any possible threat.![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.012.png)
+If more than five failed login attempts are detected within a two-minute window, the system automatically initiates an email notification process. This alert is sent to designated recipients, informing them of the potential security concern, thus enabling rapid response to mitigate any possible threat. 
 
-As the image below showcases the structure of a Logic App designed to automate response actions based on login activity. The process begins with a recurrence trigger, set to activate at specified intervals. Following the trigger, the Logic App executes a pre-defined query that retrieves login attempt results. Once the results are obtained, a 'For each' loop iterates over each entry. If a condition within the loop is met — likely based on login failures — the Logic App proceeds to send an automated email. This email action notifies the concerned parties about potential security issues, allowing for swift corrective measures. The design underscores a proactive approach to monitoring and managing login anomalies.
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.013.png)
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.012.png) 
 
-The run history of a Logic App named 'AnomalyDetectionApp0138', indicating a successful operation sequence of triggering, querying results, processing each item, and sending an email.![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.014.png)
-Email received.
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.015.png)
+As the image below showcases the structure of a Logic App designed to automate response actions based on login activity. The process begins with a recurrence trigger, set to activate at specified intervals. Following the trigger, the Logic App executes a pre-defined query that retrieves login attempt results. Once the results are obtained, a 'For each' loop iterates over each entry. If a condition within the loop is met — likely based on login failures — the Logic App proceeds to send an automated email. This email action notifies the concerned parties about potential security issues, allowing for swift corrective measures. The design underscores a proactive approach to monitoring and managing login anomalies. 
+
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.013.png) 
+
+The run history of a Logic App named 'AnomalyDetectionApp0138', indicating a successful operation sequence of triggering, querying results, processing each item, and sending an email. 
+
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.014.png) 
+
+Email received.  
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.015.png)  
 
 An alternative approach to identifying anomalous behavior is to consider the geographic location of login attempts. A significant change in the login region within a short time frame could indicate unauthorized access, as it's unlikely a user would change locations so rapidly under normal circumstances.
 
@@ -112,9 +126,11 @@ Continuous monitoring and regular review of the detection rules are imperative. 
 Documentation and compliance are also key components of this procedure. Every update to the detection rules should be logged, and changes should be communicated to relevant stakeholders, including compliance officers. Finally, ongoing education and training for the security team are vital to ensure they remain knowledgeable about the AI/ML tools at their disposal and the current threat environment.
 
 This iterative and collaborative approach to updating detection rules not only mitigates risk but also enhances the overall resilience of the cybersecurity infrastructure, ensuring preparedness against both current and future threats.
-## <a name="_i6m8gm9qhno8"></a>6.  Least Privilege Access:
-Assign the managed identity only the roles that are necessary for the Logic App to perform its tasks. For example, if Logic App only needs to read from log analytics workspace t, assign it the "Log Analytics Reader" role which allows it to read logs and metrics but not to make any changes.
-![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.016.png)
+## <a name="_i6m8gm9qhno8"></a>6.  Least Privilege Access: 
+
+Assign the managed identity only the roles that are necessary for the Logic App to perform its tasks. For example, if Logic App only needs to read from log analytics workspace t, assign it the "Log Analytics Reader" role which allows it to read logs and metrics but not to make any changes. 
+
+![](images/Aspose.Words.cea227a3-cab7-4e8e-ac7c-8c1fdc884e06.016.png) 
 
 - Navigate to the logic app in the Azure portal.
 - Go to "Access control (IAM)".
