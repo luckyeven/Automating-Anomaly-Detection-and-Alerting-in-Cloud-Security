@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsyslog-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rsyslog-server
+  template:
+    metadata:
+      labels:
+        app: rsyslog-server
+    spec:
+      containers:
+      - name: rsyslog-server
+        image: shifeng1428/rsyslog-server:latest
+        ports:
+        - containerPort: 514
+          name: syslog-udp
+          protocol: UDP
+        - containerPort: 514
+          name: syslog-tcp
+          protocol: TCP

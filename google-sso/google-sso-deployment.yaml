@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: google-sso
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: google-sso
+  template:
+    metadata:
+      labels:
+        app: google-sso
+    spec:
+      containers:
+      - name: google-sso
+        image: shifeng1428/google-sso
+        ports:
+        - containerPort: 80

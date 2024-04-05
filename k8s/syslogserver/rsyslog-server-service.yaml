@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rsyslog-server
+spec:
+  selector:
+    app: rsyslog-server
+  ports:
+  - name: syslog-udp
+    protocol: UDP
+    port: 514
+    targetPort: syslog-udp
+  - name: syslog-tcp
+    protocol: TCP
+    port: 514
+    targetPort: syslog-tcp

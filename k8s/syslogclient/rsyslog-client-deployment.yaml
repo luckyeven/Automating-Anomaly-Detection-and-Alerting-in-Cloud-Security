@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rsyslog-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rsyslog-client
+  template:
+    metadata:
+      labels:
+        app: rsyslog-client
+    spec:
+      containers:
+      - name: rsyslog-client
+        image: shifeng1428/rsyslog-client:latest
+        ports:
+        - containerPort: 5000
